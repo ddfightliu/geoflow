@@ -1,0 +1,58 @@
+/* Light theme (expanded to match VSCode light) */
+QMainWindow { background: #ffffff; color: #000000; }
+
+/* Menu bar and menus */
+QMenuBar { background: #f3f3f3; color: #000000; }
+QMenuBar::item { background: transparent; padding: 6px 10px; }
+QMenuBar::item:selected { background: #e5e5e5; }
+QMenu { background: #ffffff; color: #000000; border: 1px solid #cccccc; }
+QMenu::item:selected { background: #007acc; color: #ffffff; }
+
+/* Toolbars and status bar */
+QToolBar { background: #f3f3f3; spacing: 4px; }
+QStatusBar { background: #f3f3f3; color: #000000; }
+
+/* Activity bar (vertical toolbar on left) */
+QFrame QPushButton { background: transparent; border: none; padding: 8px; margin: 0px; border-radius: 4px; }
+QFrame QPushButton:hover { background: #e5e5e5; }
+QFrame QPushButton:checked { background: #007acc; }
+QFrame QPushButton:pressed { background: #cccccc; }
+
+/* Bottom panel (dock widget) */
+QDockWidget { background: #ffffff; color: #000000; border: 1px solid #cccccc; }
+QDockWidget::title { background: #f3f3f3; padding: 4px; border-bottom: 1px solid #cccccc; }
+QDockWidget QTextEdit { background: #ffffff; color: #000000; border: none; }
+
+/* Tree and list views */
+QTreeWidget, QListView, QTableView { background: #ffffff; color: #000000; gridline-color: #cccccc; border: 1px solid #cccccc; border-radius: 4px; }
+
+/* Tabs */
+QTabWidget::pane { border-top: 1px solid #cccccc; }
+QTabBar::tab { background: #f3f3f3; color: #000000; padding: 6px; margin: 1px; border-radius: 3px; border: 1px solid #cccccc; }
+QTabBar::tab:selected { background: #ffffff; border-bottom: 1px solid #ffffff; }
+QTabBar::tab:hover { background: #e5e5e5; }
+QTabBar::close-button { image: url(close.png); } /* Placeholder for close icon */
+QTabBar::close-button:hover { background: #ff6b6b; border-radius: 2px; }
+
+/* Buttons and inputs */
+QPushButton { background: #f3f3f3; color: #000000; border: 1px solid #cccccc; padding: 4px 8px; border-radius: 4px; }
+QPushButton:hover { background: #e5e5e5; }
+QPushButton:pressed { background: #cccccc; }
+QLineEdit, QComboBox, QSpinBox { background: #ffffff; color: #000000; border: 1px solid #cccccc; padding: 4px; border-radius: 4px; }
+
+/* Editor areas */
+QTextEdit, QPlainTextEdit { background: #ffffff; color: #000000; selection-background-color: #add6ff; border: 1px solid #cccccc; border-radius: 4px; }
+
+/* Scrollbars (thin, modern) */
+QScrollBar:vertical { background: #f3f3f3; width: 12px; margin: 0px; border-radius: 6px; }
+QScrollBar::handle:vertical { background: #cccccc; min-height: 20px; border-radius: 6px; }
+QScrollBar::handle:vertical:hover { background: #aaaaaa; }
+QScrollBar::add-line, QScrollBar::sub-line { height: 0px; }
+QScrollBar::add-page, QScrollBar::sub-page { background: transparent; }
+
+/* Labels */
+QLabel { color: #000000; }
+
+/* Splitters */
+QSplitter::handle { background: #cccccc; }
+QSplitter::handle:hover { background: #aaaaaa; }

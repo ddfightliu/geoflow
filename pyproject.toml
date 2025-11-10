@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geoflow"
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.9"
+description = "A small PySide6-based desktop demo for geoflow."
+
+[project.dependencies]
+# we recommend installing pyside6 separately; not pinning here to avoid heavy installs
+

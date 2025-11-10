@@ -1,0 +1,39 @@
+{
+  "open_views": [
+    {
+      "type": "text",
+      "title": "Welcome",
+      "content": "Welcome to geoflow"
+    },
+    {
+      "type": "view",
+      "title": "Well Section View",
+      "view_type": "Well Section",
+      "content": null
+    },
+    {
+      "type": "text",
+      "title": "pyproject.toml",
+      "content": "[build-system]\nrequires = [\"setuptools>=61.0\", \"wheel\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"geoflow\"\nversion = \"0.1.0\"\nreadme = \"README.md\"\nrequires-python = \">=3.9\"\ndescription = \"A small PySide6-based desktop demo for geoflow.\"\n\n[project.dependencies]\n# we recommend installing pyside6 separately; not pinning here to avoid heavy installs\n\n"
+    },
+    {
+      "type": "text",
+      "title": "run_geoflow.py",
+      "content": "\"\"\"\nEntry point script for running the GeoFlow application.\n\nThis script serves as the main executable to launch the GeoFlow app,\nallowing it to be run directly from the repository root directory.\n\"\"\"\n\nimport sys\n\n# Import the main function from the geoflow.app module\n# This allows running the application from the repo root\nfrom geoflow.app import main\n\nif __name__ == '__main__':\n    # Execute the main application function with command-line arguments\n    # and exit with the return code from main()\n    sys.exit(main(sys.argv))\n"
+    },
+    {
+      "type": "text",
+      "title": "test_open_file.py",
+      "content": "from geoflow.ui.window import GeoflowMainWindow\nfrom PySide6.QtWidgets import QApplication\nimport sys\n\napp = QApplication(sys.argv)\nwin = GeoflowMainWindow()\nprint('Window created')\n\n# Find a file item in the tree\nroot = win.tree.topLevelItem(0)\nfor i in range(root.childCount()):\n    child = root.child(i)\n    if child.text(0) == 'README.md':\n        print('Found README.md, opening...')\n        win.open_file_from_tree(child)\n        break\n\nprint('Tabs after opening:', win.tabs.count())\nif win.tabs.count() > 0:\n    print('Tab title:', win.tabs.tabText(0))\n\nwin.close()\napp.quit()\n"
+    },
+    {
+      "type": "text",
+      "title": "test_tree.py",
+      "content": "from geoflow.ui.window import GeoflowMainWindow\nfrom PySide6.QtWidgets import QApplication\nimport sys\n\napp = QApplication(sys.argv)\nwin = GeoflowMainWindow()\nprint('Window created, tree populated')\nprint('Tree items:', win.tree.topLevelItemCount())\nroot = win.tree.topLevelItem(0)\nprint('Root item:', root.text(0))\nprint('Children:', root.childCount())\nfor i in range(root.childCount()):\n    child = root.child(i)\n    print('Child:', child.text(0))\nwin.close()\napp.quit()\n"
+    }
+  ],
+  "layout": {
+    "theme": "Ubuntu"
+  },
+  "last_opened": null
+}
