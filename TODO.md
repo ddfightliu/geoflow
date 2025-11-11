@@ -1,23 +1,99 @@
-# TODO: Implement Well Section Template and Drag Features
+# Geoflow VSCode-like Improvements
 
-## Template Functionality
-- [x] Add save_template() method to EnhancedWellSectionWidget for serializing track configurations to JSON
-- [x] Add load_template() method to EnhancedWellSectionWidget for deserializing and applying track configurations
-- [x] Create templates/ directory for storing template files
-- [x] Add "Save Template" toolbar button with file dialog
-- [x] Add "Load Template" toolbar button with file dialog
+## Phase 1: Core VSCode Features
+- [ ] **Activity Bar Enhancements**
+  - Add Search icon and panel
+  - Add Source Control (Git) icon and panel
+  - Add Extensions icon and panel
+  - Add Debug icon and panel
+  - Add Settings icon
 
-## Mouse Drag for Track Adjustment
-- [x] Extend WellSectionCanvas mouse event handling for drag detection on track boundaries
-- [x] Implement track width adjustment logic during drag (proportional resizing)
-- [x] Add visual feedback during drag (cursor changes, boundary highlighting)
-- [x] Update display layout after drag adjustments
+- [ ] **Sidebar Improvements**
+  - Make sidebar panels collapsible
+  - Add Search panel with file/content search
+  - Add Source Control panel with Git status
+  - Add Extensions panel
+  - Add Problems panel for errors/warnings
 
-## Track Configuration Updates
-- [x] Ensure track properties (width, color, curves) are properly serialized/deserialized
-- [x] Update setup_display() to handle dynamic track configurations from templates
+- [ ] **Command Palette**
+  - Implement Ctrl+Shift+P command palette
+  - Add common commands (open file, new file, etc.)
+  - Add view switching commands
 
-## Testing and Verification
-- [x] Test template saving and loading functionality
-- [x] Test mouse drag resizing of tracks
-- [x] Verify display updates correctly after template loading and drag adjustments
+- [ ] **Settings & Preferences**
+  - Add settings dialog
+  - Support for user/workspace settings
+  - Theme selection improvements
+
+## Phase 2: Editor & Views
+- [ ] **Split Editor Support**
+  - Horizontal/vertical split panes
+  - Drag and drop between panes
+
+- [ ] **Better File Management**
+  - Drag and drop files
+  - Better context menus
+  - File operations (rename, delete, etc.)
+
+- [ ] **Enhanced Views**
+  - Improve 3D view with better controls
+  - Add more view types (seismic, cross-section)
+  - Better view switching
+
+## Phase 3: Development Tools
+- [ ] **Integrated Terminal**
+  - Add terminal panel
+  - Support for multiple terminals
+  - Command execution integration
+
+- [ ] **Problems Panel**
+  - Show Python errors/warnings
+  - File parsing issues
+  - Validation errors
+
+- [ ] **Output Panel**
+  - Build output
+  - Command execution results
+  - Debug output
+
+## Phase 4: Web Version Improvements
+- [ ] **Web Activity Bar**
+  - Mirror desktop activity bar features
+
+- [ ] **Web Sidebar Panels**
+  - Add collapsible panels
+  - Search functionality
+
+- [ ] **Web Command Palette**
+  - Keyboard shortcut support
+
+- [ ] **Web Terminal**
+  - Integrated web terminal
+
+## Phase 5: Extensions & Customization
+- [ ] **Extension Framework**
+  - Plugin system for views
+  - Custom tools and panels
+
+- [ ] **Theme System**
+  - More themes
+  - Custom theme support
+
+## Phase 1 Web: Core VSCode Features for Web Frontend
+- [x] Create ActivityBar.vue component with icons for Explorer, Search, Source Control, Extensions, Problems, Settings
+- [x] Rename Sidebar.vue to ExplorerPanel.vue and update for panel switching
+- [x] Create SearchPanel.vue for file/content search
+- [x] Create SourceControlPanel.vue for Git status
+- [x] Create ExtensionsPanel.vue placeholder
+- [x] Create ProblemsPanel.vue for errors/warnings
+- [x] Create CommandPalette.vue modal with search and commands
+- [x] Create SettingsDialog.vue modal with theme selection
+- [x] Update App.vue to include activity bar and conditional sidebar panels
+- [x] Add keyboard event listeners for Ctrl+Shift+P in App.vue
+- [x] Update backend main.py with /api/search, /api/git-status, /api/settings endpoints
+- [x] Test the implementation and update TODO.md
+
+## Current Status
+- Desktop version has basic VSCode-like layout
+- Web version has basic editor functionality
+- Implementing Phase 1 for web frontend
