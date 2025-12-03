@@ -1,5 +1,6 @@
 # geoflow
 本项目基础功能与vscode类似
+项目gui仿照vscode
 
 本项目包括两套gui
 1.python+pyside6

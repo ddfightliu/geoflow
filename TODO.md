@@ -93,7 +93,21 @@
 - [x] Update backend main.py with /api/search, /api/git-status, /api/settings endpoints
 - [x] Test the implementation and update TODO.md
 
+## Menu Bar Implementation
+- [x] Create MenuBar.vue component with File, Edit, View menus
+- [x] Add menu bar to App.vue layout
+- [x] Implement menu commands in App.vue (new file, new project, save file, etc.)
+- [x] Update CommandPalette.vue with additional menu commands
+- [x] Add backend API endpoint for project creation
+- [x] Integrate menu commands with existing functionality
+
 ## Current Status
 - Desktop version has basic VSCode-like layout
 - Web version has basic editor functionality
 - Implementing Phase 1 for web frontend
+
+## Monaco-Editor and UI Resizing Fixes
+- [x] Fix monaco-editor display issues in Editor.vue
+- [x] Add resizable functionality to sidebar and panels in App.vue
+- [x] Ensure files display correctly in ExplorerPanel on project load
+- [x] Test resizing and editor display

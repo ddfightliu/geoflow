@@ -31,7 +31,26 @@ export default {
       default: null
     }
   },
-  emits: ['file-open']
+  emits: ['file-open', 'project-loaded'],
+  async mounted() {
+    // Load project data if not provided
+    if (!this.projectData) {
+      await this.loadProjectData()
+    }
+  },
+  methods: {
+    async loadProjectData() {
+      try {
+        const response = await fetch('/api/project')
+        const data = await response.json()
+        this.projectData = data
+        // Emit event to notify parent that project data is loaded
+        this.$emit('project-loaded', data)
+      } catch (error) {
+        console.error('Failed to load project:', error)
+      }
+    }
+  }
 }
 </script>
 

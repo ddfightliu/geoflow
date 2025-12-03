@@ -35,14 +35,23 @@ export default {
   data() {
     return {
       editor: null,
-      loading: true
+      loading: true,
+      resizeObserver: null,
+      layoutTimeout: null
     }
   },
   mounted() {
     this.initEditor()
     this.loadFileContent()
+    this.setupResizeObserver()
   },
   beforeUnmount() {
+    if (this.layoutTimeout) {
+      clearTimeout(this.layoutTimeout)
+    }
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+    }
     if (this.editor) {
       this.editor.dispose()
     }
@@ -64,9 +73,31 @@ export default {
         fontSize: this.settings.fontSize,
         minimap: { enabled: false },
         scrollBeyondLastLine: false,
-        automaticLayout: true,
+        automaticLayout: false, // Disable automatic layout to handle manually
         wordWrap: this.settings.wordWrap ? 'on' : 'off'
       })
+      // Manually trigger layout after a short delay to ensure container is ready
+      setTimeout(() => {
+        if (this.editor) {
+          this.editor.layout()
+        }
+      }, 100)
+    },
+    setupResizeObserver() {
+      if (window.ResizeObserver) {
+        this.resizeObserver = new ResizeObserver((entries) => {
+          // Debounce the layout calls to avoid excessive updates
+          if (this.layoutTimeout) {
+            clearTimeout(this.layoutTimeout)
+          }
+          this.layoutTimeout = setTimeout(() => {
+            if (this.editor) {
+              this.editor.layout()
+            }
+          }, 16) // ~60fps
+        })
+        this.resizeObserver.observe(this.$refs.editorContainer)
+      }
     },
     getLanguageFromFileName(fileName) {
       const ext = fileName.split('.').pop().toLowerCase()
