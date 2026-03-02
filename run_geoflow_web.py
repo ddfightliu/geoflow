@@ -14,8 +14,14 @@ if __name__ == '__main__':
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     
     try:
-        # Run the FastAPI application with uvicorn
-        uvicorn.run("geoflow.web.backend.main:app", host="0.0.0.0", port=8000, reload=True)
+        # Run the FastAPI application with uvicorn.
+        # Prefer the top-level `backend` package if present (cleaner layout).
+        backend_target = "backend.main:app"
+        # Fall back to original package location for compatibility
+        if not os.path.exists(os.path.join(os.path.dirname(__file__), "backend")):
+            backend_target = "geoflow.web.backend.main:app"
+
+        uvicorn.run(backend_target, host="0.0.0.0", port=8000, reload=True)
     except Exception as e:
         print(f"Error starting server: {e}")
         sys.exit(1)
