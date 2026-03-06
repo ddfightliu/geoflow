@@ -34,10 +34,10 @@ export default {
       const icons = {
         github: 'fab fa-github',
         microsoft: 'fab fa-microsoft',
-        feishu: 'icon-feishu',
+        feishu: 'fas fa-bird',  // Using bird as feishu logo substitute
         wechat: 'fab fa-weixin',
-        alipay: 'icon-alipay',
-        douyin: 'icon-douyin'
+        alipay: 'fas fa-money-bill-wave',
+        douyin: 'fab fa-tiktok'  // Douyin/TikTok share similar branding
       }
       return icons[this.provider] || 'fas fa-user'
     }
@@ -110,25 +110,6 @@ export default {
 .login-button__text {
   flex: 1;
   text-align: center;
-}
-
-/* Custom icons */
-.icon-feishu::before {
-  content: "飞书";
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.icon-alipay::before {
-  content: "支";
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.icon-douyin::before {
-  content: "抖";
-  font-size: 16px;
-  font-weight: bold;
 }
 </style>
 

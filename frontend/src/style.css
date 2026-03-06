@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* Synthwave Theme Color Variables */
+:root {
+  /* Synthwave palette */
+  --synthwave-bg: #1a1a2e;
+  --synthwave-bg-dark: #16213e;
+  --synthwave-bg-darker: #0f0f23;
+  --synthwave-primary: #ff2a6d;
+  --synthwave-secondary: #05d9e8;
+  --synthwave-accent: #d1f7ff;
+  --synthwave-pink: #ff006e;
+  --synthwave-purple: #8338ec;
+  --synthwave-orange: #fb5607;
+  --synthwave-yellow: #ffbe0b;
+  
+  /* VSCode-like colors */
+  --vscode-bg: #1e1e1e;
+  --vscode-sidebar: #252526;
+  --vscode-activity: #333333;
+  --vscode-status: #007acc;
+  --vscode-text: #cccccc;
+  --vscode-text-bright: #ffffff;
+  --vscode-border: #3c3c3c;
+  --vscode-button: #0e639c;
+  --vscode-button-hover: #1177bb;
+  
+  /* Windows login style colors */
+  --win-bg: #f3f3f3;
+  --win-login-bg: #2d2d30;
+  --win-input-bg: #3c3c3c;
+  --win-input-border: #3c3c3c;
+  --win-input-focus: #007acc;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--vscode-bg);
+  color: var(--vscode-text);
+  overflow: hidden;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--vscode-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4f4f4f;
+}
+
+/* Input focus styles */
+input:focus, button:focus {
+  outline: none;
+}
+
+/* TailwindCSS utilities for synthwave theme */
+@layer utilities {
+  .bg-synthwave {
+    background-color: var(--synthwave-bg);
+  }
+  
+  .bg-vscode {
+    background-color: var(--vscode-bg);
+  }
+  
+  .text-vscode {
+    color: var(--vscode-text);
+  }
+  
+  .border-vscode {
+    border-color: var(--vscode-border);
+  }
+}
+

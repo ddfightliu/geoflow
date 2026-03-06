@@ -48,6 +48,36 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async loginWithCredentials({ username, password, remember_me = false }) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await axios.post(`${API_BASE}/api/auth/login`, {
+          username,
+          password,
+          remember_me
+        })
+        
+        const { access_token, user } = response.data
+        this.token = access_token
+        this.user = user
+        
+        if (remember_me) {
+          localStorage.setItem('token', access_token)
+        } else {
+          sessionStorage.setItem('token', access_token)
+        }
+        
+        this.loading = false
+        return { success: true }
+      } catch (error) {
+        console.error('Login failed:', error)
+        this.error = error.response?.data?.detail || 'Login failed. Please check your credentials.'
+        this.loading = false
+        return { success: false, error: this.error }
+      }
+    },
+
     async fetchCurrentUser() {
       if (!this.token) return null
       
@@ -66,15 +96,19 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    setToken(token) {
+    async setToken(token) {
       this.token = token
+      this.loading = true
       localStorage.setItem('token', token)
-      this.fetchCurrentUser()
+      await this.fetchCurrentUser()
+      this.loading = false
     },
 
     logout() {
       this.user = null
       this.token = null
+      this.loading = false
+      this.error = null
       localStorage.removeItem('token')
     },
 

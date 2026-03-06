@@ -15,6 +15,12 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: '/login/success',
+    name: 'LoginSuccess',
+    component: Login,
+    meta: { requiresAuth: false }
+  },
+  {
     path: '/',
     name: 'Home',
     component: Home,
