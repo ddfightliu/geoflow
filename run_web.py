@@ -27,8 +27,10 @@ else:
 
 
 async def stream_proc(cmd, cwd=None, name=None):
+    env = os.environ.copy()
     proc = await asyncio.create_subprocess_exec(
         *cmd,
+        env=env,
         cwd=str(cwd) if cwd else None,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
@@ -47,41 +49,51 @@ async def main():
     # Use top-level backend if available for clearer separation.
     backend_target = "backend.main:app" if (ROOT / "backend").exists() else "geoflow.web.backend.main:app"
     backend_cmd = [sys.executable, "-m", "uvicorn", backend_target, "--reload", "--host", "127.0.0.1", "--port", "8000"]
+    print(f"Backend command: {' '.join(backend_cmd)} cwd={ROOT}")
 
     # Frontend command: use bun to run the `dev` script from package.json
     frontend_cmd = ["bun", "run", "dev"]
+    if os.name == 'nt':  # Windows
+        frontend_cmd = ['cmd', '/c'] + frontend_cmd
+        print(f"Frontend command: {' '.join(frontend_cmd)} cwd={FRONTEND_DIR}")
 
-    # Ensure frontend dir exists
-    if not FRONTEND_DIR.exists():
-        print(f"Frontend directory not found: {FRONTEND_DIR}")
-        return 1
+        # Ensure frontend dir exists
+        if not FRONTEND_DIR.exists():
+            print(f"Frontend directory not found: {FRONTEND_DIR}")
+            return 1
 
-    print("Starting backend and frontend (use Ctrl-C to stop)...")
+        print("Starting backend and frontend (use Ctrl-C to stop)...")
 
-    tasks = [
-        asyncio.create_task(stream_proc(backend_cmd, cwd=ROOT, name="backend")),
-        asyncio.create_task(stream_proc(frontend_cmd, cwd=FRONTEND_DIR, name="frontend")),
-    ]
+        tasks = [
+            asyncio.create_task(stream_proc(backend_cmd, cwd=ROOT, name="backend")),
+            asyncio.create_task(stream_proc(frontend_cmd, cwd=FRONTEND_DIR, name="frontend")),
+        ]
 
-    # Handle SIGINT/SIGTERM
-    loop = asyncio.get_running_loop()
-    stop = asyncio.Event()
+        # Handle SIGINT/SIGTERM
+        loop = asyncio.get_running_loop()
+        stop = asyncio.Event()
 
-    def _stop(*_):
-        stop.set()
+        def _stop(*_):
+            stop.set()
 
-    loop.add_signal_handler(signal.SIGINT, _stop)
-    loop.add_signal_handler(signal.SIGTERM, _stop)
+        try:
+            loop.add_signal_handler(signal.SIGINT, _stop)
+            loop.add_signal_handler(signal.SIGTERM, _stop)
+        except NotImplementedError:
+            pass  # Windows fallback
 
-    await stop.wait()
+        try:
+            await stop.wait()
+        except KeyboardInterrupt:
+            stop.set()
 
-    for t in tasks:
-        t.cancel()
+        for t in tasks:
+            t.cancel()
 
-    # Give subprocesses a moment to terminate
-    await asyncio.sleep(0.2)
+        # Give subprocesses a moment to terminate
+        await asyncio.sleep(0.2)
 
-    return 0
+        return 0
 
 
 if __name__ == "__main__":
