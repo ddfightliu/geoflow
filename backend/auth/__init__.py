@@ -11,8 +11,8 @@ This module provides OAuth2-based authentication supporting multiple platforms:
 """
 
 from backend.auth.config import get_settings, OAUTH_PROVIDERS
-from backend.auth.database import get_db, init_db
-from backend.auth.models import User
+# from backend.auth.database import get_db, init_db  # Not used
+# from backend.auth.models import User  # No SQLAlchemy model needed
 from backend.auth.schemas import (
     UserResponse,
     Token,
@@ -27,9 +27,6 @@ from backend.auth.routes import router as auth_router
 __all__ = [
     "get_settings",
     "OAUTH_PROVIDERS",
-    "get_db",
-    "init_db",
-    "User",
     "UserResponse",
     "Token",
     "OAuthRedirect",

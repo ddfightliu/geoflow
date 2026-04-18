@@ -99,7 +99,7 @@
         <div class="register-section">
           <p>
             还没有账户?
-            <a href="#" class="register-link" @click.prevent="handleRegister">立即注册</a>
+            <router-link to="/register" class="register-link">立即注册</router-link>
           </p>
         </div>
       </div>

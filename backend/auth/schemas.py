@@ -13,12 +13,22 @@ class UserBase(BaseModel):
     username: str
     full_name: Optional[str] = None
     avatar_url: Optional[str] = None
+    points: float = 0.0
 
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
     """Schema for creating a user."""
-    provider: str
-    provider_id: str
+    username: str
+    email: EmailStr
+    password: str
+    points: float = 1000.0  # New users get initial points
+
+
+class UserLogin(BaseModel):
+    """Schema for user login."""
+    username: str
+    password: str
+    remember_me: bool = False
 
 
 class UserUpdate(BaseModel):
@@ -26,12 +36,13 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     full_name: Optional[str] = None
     avatar_url: Optional[str] = None
+    points: Optional[float] = None
 
 
 class UserResponse(UserBase):
     """Schema for user response."""
     id: int
-    provider: str
+    provider: Optional[str] = None
     is_active: bool
     is_superuser: bool
     created_at: datetime
@@ -75,4 +86,39 @@ class MessageResponse(BaseModel):
 class ProviderList(BaseModel):
     """Schema for listing available OAuth providers."""
     providers: List[dict]
+
+
+class ForgotPassword(BaseModel):
+    email: EmailStr
+
+
+class PointsBalance(BaseModel):
+    points: float
+
+
+class TransactionCreate(BaseModel):
+    quantity: float
+    price: float
+    type: str  # 'buy' or 'sell'
+
+
+class TransactionResponse(BaseModel):
+    id: str
+    user_id: str
+    quantity: float
+    price: float
+    total_price: float
+    type: str
+    fee: float
+    created_at: datetime
+
+
+class PointsBuySell(BaseModel):
+    quantity: float
+    price: float
+
+
+class MarketPrice(BaseModel):
+    current_price: float
+    change_24h: float
 

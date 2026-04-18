@@ -9,7 +9,11 @@ import sys
 
 # Import the main function from the geoflow.app module
 # This allows running the application from the repo root
-from geoflow.app import main
+import uvicorn
+from backend.main import app
+
+if __name__ == '__main__':
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 if __name__ == '__main__':
     # Execute the main application function with command-line arguments

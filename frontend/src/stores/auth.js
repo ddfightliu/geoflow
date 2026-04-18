@@ -62,6 +62,10 @@ export const useAuthStore = defineStore('auth', {
         this.token = access_token
         this.user = user
         
+        if (user.points !== undefined) {
+          user.points = parseFloat(user.points) || 0
+        }
+        
         if (remember_me) {
           localStorage.setItem('token', access_token)
         } else {
@@ -75,6 +79,83 @@ export const useAuthStore = defineStore('auth', {
         this.error = error.response?.data?.detail || 'Login failed. Please check your credentials.'
         this.loading = false
         return { success: false, error: this.error }
+      }
+    },
+
+    async register({ username, email, password }) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await axios.post(`${API_BASE}/api/auth/register`, {
+          username,
+          email,
+          password
+        })
+        this.error = '注册成功，请登录！'
+        this.$router.push('/login')
+      } catch (error) {
+        console.error('Register failed:', error)
+        this.error = error.response?.data?.detail || '注册失败，请重试。'
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async forgotPassword(email) {
+      this.loading = true
+      this.error = null
+      try {
+        await axios.post(`${API_BASE}/api/auth/forgot-password`, { email })
+        this.error = '重置邮件已发送，请检查邮箱！'
+      } catch (error) {
+        console.error('Forgot password failed:', error)
+        this.error = error.response?.data?.detail || '发送失败，请重试。'
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchPointsBalance() {
+      if (!this.isAuthenticated) return
+      try {
+        const response = await axios.get(`${API_BASE}/api/points/balance`, {
+          headers: { Authorization: `Bearer ${this.token}` }
+        })
+        if (this.user) {
+          this.user.points = response.data.points
+        }
+      } catch (error) {
+        console.error('Failed to fetch points:', error)
+      }
+    },
+
+    async buyVirtualPoints(form) {
+      if (!this.isAuthenticated) throw new Error('Not authenticated')
+      try {
+        const response = await axios.post(`${API_BASE}/api/points/buy`, form, {
+          headers: { Authorization: `Bearer ${this.token}` }
+        })
+        this.user.points += form.quantity
+        this.error = '购买成功！'
+      } catch (error) {
+        console.error('Buy failed:', error)
+        this.error = error.response?.data?.detail || '购买失败'
+        throw error
+      }
+    },
+
+    async sellVirtualPoints(form) {
+      if (!this.isAuthenticated) throw new Error('Not authenticated')
+      try {
+        const response = await axios.post(`${API_BASE}/api/points/sell`, form, {
+          headers: { Authorization: `Bearer ${this.token}` }
+        })
+        this.user.points -= form.quantity
+        this.error = '出售成功！'
+      } catch (error) {
+        console.error('Sell failed:', error)
+        this.error = error.response?.data?.detail || '出售失败'
+        throw error
       }
     },
 

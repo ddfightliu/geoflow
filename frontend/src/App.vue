@@ -3,8 +3,8 @@
     <!-- VSCode-style title bar -->
     <div class="title-bar" v-if="isAuthenticated">
       <div class="title-bar-left">
-        <span class="app-icon">🌍</span>
-        <span class="app-title">Geoflow - {{ currentViewTitle }}</span>
+<span class="app-icon">⚡</span>
+        <span class="app-title">虚拟点交易平台 - {{ currentViewTitle }}</span>
       </div>
       <div class="title-bar-center">
         <span class="file-path">{{ currentFilePath }}</span>
@@ -51,7 +51,7 @@
       <!-- Sidebar (Explorer) -->
       <div class="sidebar" v-if="isAuthenticated">
         <div class="sidebar-header">
-          <span>资源管理器</span>
+          <span>虚拟点钱包</span>
         </div>
         <div class="sidebar-content">
           <div class="sidebar-section">

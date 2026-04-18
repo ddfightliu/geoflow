@@ -1,13 +1,24 @@
-# TODO - Frontend Styling Update
+# Geoflow Virtual Points Platform - Error Fixing TODO
 
-## Task: 按照 myplan.md 进行修改
+## Current Task: Fix Project Errors
 
-- [x] 1. 分析 myplan.md 和现有代码
-- [x] 2. 更新 vite.config.js 添加 TailwindCSS 插件
-- [x] 3. 创建 frontend/src/style.css 主样式文件
-- [x] 4. 更新 frontend/src/main.js 引入新样式
-- [x] 5. 重写 Login.vue 为 Windows 风格登录界面
-- [x] 6. 重写 App.vue 为 VSCode 风格 + synthwave 主题
-- [x] 7. 更新 auth.js store 添加 loginWithCredentials
-- [ ] 8. 验证构建和运行
+**Completed Steps:**
+- [x] Create TODO.md tracking progress
+
+**Remaining Steps:**
+1. [x] Fix backend/auth/database.py (wrong collection, ObjectId handling)
+2. [x] Remove/replace backend/auth/models.py (SQLAlchemy → MongoDB)
+3. [x] Fix backend/auth/routes.py (event decorator, Pydantic v2, imports, types)
+4. [x] Fix run_geoflow.py (missing import)
+5. [ ] Test API endpoints (uvicorn backend.main:app --reload)
+6. [ ] Frontend integration check (if needed)
+
+**Testing Commands:**
+```
+source venv/bin/activate  # if using venv
+uvicorn backend.main:app --reload --port 8000
+```
+Test: GET /api/auth/providers, POST /api/auth/register, etc.
+
+**Next:** Step 1 - database.py fixes.
 

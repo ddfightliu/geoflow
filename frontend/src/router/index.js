@@ -5,6 +5,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
 import Home from '../views/Home.vue'
 
 const routes = [
@@ -12,6 +13,12 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register,
     meta: { requiresAuth: false }
   },
   {
