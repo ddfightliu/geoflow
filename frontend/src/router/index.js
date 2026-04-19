@@ -22,6 +22,12 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: '/register/success',
+    name: 'RegisterSuccess',
+    component: Register,
+    meta: { requiresAuth: false }
+  },
+  {
     path: '/login/success',
     name: 'LoginSuccess',
     component: Login,

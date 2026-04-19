@@ -1,24 +1,23 @@
-# Geoflow Virtual Points Platform - Error Fixing TODO
+# New Tasks: Forgot Password + Console Welcomes
 
-## Current Task: Fix Project Errors
+Status: **Planning** 
 
-**Completed Steps:**
-- [x] Create TODO.md tracking progress
+## Tasks
+1. **Fix run_geoflow.py** - Remove `--api` flag (Vite error), fix readiness check
+2. **Forgot Password**:
+   - Login.vue: "忘记密码?" → input modal → authStore.forgotPassword(email)
+   - Store already has action (backend mock OK)
+   - Show toast "重置邮件发送成功"
+3. **Console Welcome Messages** - Add `console.log` in onMounted:
+   - Login.vue: "欢迎来到登录页面! 👋"
+   - Register.vue: "欢迎注册虚拟点交易平台! ✨"
+   - Home.vue: "欢迎回家，交易大师! 💰"
+   - App.vue: "GeoFlow App loaded! 🚀"
 
-**Remaining Steps:**
-1. [x] Fix backend/auth/database.py (wrong collection, ObjectId handling)
-2. [x] Remove/replace backend/auth/models.py (SQLAlchemy → MongoDB)
-3. [x] Fix backend/auth/routes.py (event decorator, Pydantic v2, imports, types)
-4. [x] Fix run_geoflow.py (missing import)
-5. [ ] Test API endpoints (uvicorn backend.main:app --reload)
-6. [ ] Frontend integration check (if needed)
+## Files
+- run_geoflow.py
+- frontend/src/views/Login.vue (add forgot modal)
+- All Vue pages (add console.log)
 
-**Testing Commands:**
-```
-source venv/bin/activate  # if using venv
-uvicorn backend.main:app --reload --port 8000
-```
-Test: GET /api/auth/providers, POST /api/auth/register, etc.
-
-**Next:** Step 1 - database.py fixes.
+Approve plan?
 

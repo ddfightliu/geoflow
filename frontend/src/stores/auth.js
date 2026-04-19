@@ -9,12 +9,13 @@ import axios from 'axios'
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
 
 export const useAuthStore = defineStore('auth', {
-  state: () => ({
+    state: () => ({
     user: null,
     token: localStorage.getItem('token') || null,
     providers: [],
     loading: false,
-    error: null
+    error: null,
+    registerSuccess: false
   }),
 
   getters: {
@@ -82,17 +83,19 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async register({ username, email, password }) {
+async register({ username, email, password }) {
       this.loading = true
       this.error = null
+      this.registerSuccess = false
       try {
         const response = await axios.post(`${API_BASE}/api/auth/register`, {
           username,
           email,
           password
         })
-        this.error = '注册成功，请登录！'
-        this.$router.push('/login')
+        // Success - show success on register page
+        this.registerSuccess = true
+        this.$router.push('/register?success=true')
       } catch (error) {
         console.error('Register failed:', error)
         this.error = error.response?.data?.detail || '注册失败，请重试。'
@@ -100,6 +103,7 @@ export const useAuthStore = defineStore('auth', {
         this.loading = false
       }
     },
+
 
     async forgotPassword(email) {
       this.loading = true

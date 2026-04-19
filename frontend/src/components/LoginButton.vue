@@ -12,42 +12,41 @@
   </button>
 </template>
 
-<script>
-export default {
-  name: 'LoginButton',
-  props: {
-    provider: {
-      type: String,
-      required: true
-    },
-    text: {
-      type: String,
-      default: ''
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    }
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  provider: {
+    type: String,
+    required: true
   },
-  computed: {
-    iconClass() {
-      const icons = {
-        github: 'fab fa-github',
-        microsoft: 'fab fa-microsoft',
-        feishu: 'fas fa-bird',  // Using bird as feishu logo substitute
-        wechat: 'fab fa-weixin',
-        alipay: 'fas fa-money-bill-wave',
-        douyin: 'fab fa-tiktok'  // Douyin/TikTok share similar branding
-      }
-      return icons[this.provider] || 'fas fa-user'
-    }
+  text: {
+    type: String,
+    default: ''
   },
-  methods: {
-    handleClick() {
-      if (!this.disabled) {
-        this.$emit('click', this.provider)
-      }
-    }
+  disabled: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['click'])
+
+const iconClass = computed(() => {
+  const icons = {
+    github: 'fab fa-github',
+    microsoft: 'fab fa-microsoft',
+    feishu: 'fas fa-bird',
+    wechat: 'fab fa-weixin',
+    alipay: 'fas fa-money-bill-wave',
+    douyin: 'fab fa-tiktok'
+  }
+  return icons[props.provider] || 'fas fa-user'
+})
+
+const handleClick = () => {
+  if (!props.disabled) {
+    emit('click', props.provider)
   }
 }
 </script>
@@ -74,7 +73,7 @@ export default {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.login-button:disabled {
+.login-button--disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -112,4 +111,3 @@ export default {
   text-align: center;
 }
 </style>
-

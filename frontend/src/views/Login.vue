@@ -60,7 +60,30 @@
               <input type="checkbox" v-model="rememberMe" />
               <span>记住我</span>
             </label>
-            <a href="#" class="forgot-link">忘记密码?</a>
+            <button type="button" class="forgot-link" @click="showForgotModal = true">忘记密码?</button>
+          </div>
+
+          <!-- Forgot Password Modal -->
+          <div v-if="showForgotModal" class="modal-overlay" @click="showForgotModal = false">
+            <div class="modal" @click.stop>
+              <h3>重置密码</h3>
+              <form @submit.prevent="handleForgotPassword">
+                <div class="input-group">
+                  <label for="forgot-email">邮箱地址</label>
+                  <input
+                    id="forgot-email"
+                    v-model="forgotEmail"
+                    type="email"
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
+                <div class="modal-actions">
+                  <button type="button" @click="showForgotModal = false" class="cancel-btn">取消</button>
+                  <button type="submit" class="confirm-btn" :disabled="!forgotEmail">发送重置链接</button>
+                </div>
+              </form>
+            </div>
           </div>
 
           <!-- Error message -->
@@ -107,92 +130,87 @@
   </div>
 </template>
 
-<script>
-import { mapState, mapActions, mapGetters } from 'pinia'
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { storeToRefs } from 'pinia'
 
-export default {
-  name: 'LoginView',
-  data() {
-    return {
-      username: '',
-      password: '',
-      rememberMe: false,
-      showPassword: false
-    }
-  },
-  computed: {
-    ...mapState(useAuthStore, ['loading', 'error']),
-    ...mapGetters(useAuthStore, ['availableProviders'])
-  },
-  methods: {
-    ...mapActions(useAuthStore, [
-      'loginWithProvider',
-      'loginWithCredentials',
-      'setToken',
-      'fetchProviders',
-      'clearError'
-    ]),
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
+const { loading, error, availableProviders } = storeToRefs(authStore)
 
-    handleLogin() {
-      if (!this.username || !this.password) {
-        return
-      }
-      this.loginWithCredentials({
-        username: this.username,
-        password: this.password,
-        remember_me: this.rememberMe
-      })
-    },
+const username = ref('')
+const password = ref('')
+const rememberMe = ref(false)
+const showPassword = ref(false)
+const showForgotModal = ref(false)
+const forgotEmail = ref('')
 
-    handleSocialLogin(providerId) {
-      this.loginWithProvider(providerId)
-    },
+const handleLogin = () => {
+  if (!username.value || !password.value) return
+  authStore.loginWithCredentials({
+    username: username.value,
+    password: password.value,
+    remember_me: rememberMe.value
+  })
+}
 
-    handleRegister() {
-      // TODO: Navigate to register page
-      console.log('Navigate to register')
-    },
-
-    getProviderIcon(providerId) {
-      const icons = {
-        github: 'fab fa-github',
-        google: 'fab fa-google',
-        microsoft: 'fab fa-microsoft',
-        qq: 'fab fa-qq',
-        wechat: 'fab fa-weixin'
-      }
-      return icons[providerId] || 'fas fa-sign-in-alt'
-    },
-
-    checkOAuthCallback() {
-      let token = null
-      let userId = null
-      
-      const urlParams = new URLSearchParams(window.location.search)
-      token = urlParams.get('token')
-      userId = urlParams.get('user_id')
-      
-      if (!token && window.location.hash) {
-        const hashParams = new URLSearchParams(window.location.hash.substring(1))
-        token = hashParams.get('token')
-        userId = hashParams.get('user_id')
-      }
-      
-      if (token && userId) {
-        this.setToken(token)
-        const cleanHash = window.location.hash.split('?')[0]
-        window.history.replaceState({}, document.title, cleanHash || '/#/login/success')
-        this.$router.push('/')
-      }
-    }
-  },
-  mounted() {
-    this.clearError()
-    this.fetchProviders()
-    this.checkOAuthCallback()
+const handleForgotPassword = async () => {
+  if (!forgotEmail.value) return
+  try {
+    await authStore.forgotPassword(forgotEmail.value)
+    alert('重置链接已发送，请检查邮箱 (demo模式)')
+    showForgotModal.value = false
+  } catch (err) {
+    console.error('Forgot password error:', err)
   }
 }
+
+const handleSocialLogin = (providerId) => {
+  authStore.loginWithProvider(providerId)
+}
+
+const getProviderIcon = (providerId) => {
+  const icons = {
+    github: 'fab fa-github',
+    google: 'fab fa-google',
+    microsoft: 'fab fa-microsoft',
+    qq: 'fab fa-qq',
+    wechat: 'fab fa-weixin'
+  }
+  return icons[providerId] || 'fas fa-sign-in-alt'
+}
+
+const checkOAuthCallback = () => {
+  let token = null
+  let userId = null
+  
+  const urlParams = new URLSearchParams(window.location.search)
+  token = urlParams.get('token')
+  userId = urlParams.get('user_id')
+  
+  if (!token && window.location.hash) {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1))
+    token = hashParams.get('token')
+    userId = hashParams.get('user_id')
+  }
+  
+  if (token && userId) {
+    authStore.setToken(token)
+    const cleanHash = window.location.hash.split('?')[0]
+    window.history.replaceState({}, document.title, cleanHash || '/#/login/success')
+    router.push('/')
+  }
+}
+
+onMounted(() => {
+  console.log('欢迎来到登录页面! 👋')
+  authStore.clearError()
+  authStore.fetchProviders()
+  checkOAuthCallback()
+})
 </script>
 
 <style scoped>
@@ -216,7 +234,6 @@ export default {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
-/* Left side - Branding */
 .login-branding {
   flex: 1;
   background: linear-gradient(135deg, #ff2a6d 0%, #8338ec 50%, #05d9e8 100%);
@@ -260,7 +277,6 @@ export default {
   margin: 0;
 }
 
-/* Right side - Login Form */
 .login-form-section {
   flex: 1;
   padding: 40px;
@@ -495,6 +511,66 @@ export default {
   font-size: 18px;
 }
 
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+}
+
+.modal {
+  background: #252526;
+  padding: 40px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  max-height: 90vh;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.modal h3 {
+  margin: 0 0 24px 0;
+  font-size: 24px;
+  color: #e0e0e0;
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cancel-btn, .confirm-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #404040;
+  color: #e0e0e0;
+}
+
+.confirm-btn {
+  background: #0078d4;
+  color: white;
+}
+
+.confirm-btn:disabled {
+  opacity: 0.6;
+}
+
 .register-section {
   margin-top: 24px;
   text-align: center;
@@ -512,7 +588,6 @@ export default {
   text-decoration: underline;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .login-box {
     flex-direction: column;
@@ -531,4 +606,3 @@ export default {
   }
 }
 </style>
-

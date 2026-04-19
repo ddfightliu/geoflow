@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30 * 24 * 60  # 30 days
     
     # Database
-    DATABASE_URL: str = "mongodb+srv://ddfightliu:Gyz20182018*@cluster0.ewis9cz.mongodb.net/?appName=Cluster0"
+    DATABASE_URL: str = "mongodb+srv://ddfightliu:1234QWERasdf@cluster0.ewis9cz.mongodb.net/geoflow?retryWrites=true&w=majority&authSource=admin&appName=Cluster0"    
     
     # OAuth Providers - GitHub
     GITHUB_CLIENT_ID: str = ""

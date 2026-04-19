@@ -6,14 +6,17 @@
         <div class="branding-content">
           <h1 class="brand-title">虚拟点交易平台</h1>
           <p class="brand-subtitle">加入游戏世界，开启虚拟点交易之旅</p>
+          
         </div>
       </div>
 
       <!-- Register Form -->
       <div class="register-form-section">
         <div class="form-header">
-          <h2>注册新账户</h2>
-          <p class="form-subtitle">创建账户开始交易虚拟点</p>
+          <h2 v-if="!successMode">注册新账户</h2>
+          <h2 v-else class="success-title">注册成功!</h2>
+          <p v-if="!successMode" class="form-subtitle">创建账户开始交易虚拟点</p>
+          <p v-else class="success-subtitle">{{ successMessage }}</p>
         </div>
 
         <form @submit.prevent="handleRegister" class="register-form">
@@ -28,6 +31,7 @@
                 type="text"
                 placeholder="选择一个独特的用户名"
                 :disabled="loading"
+                @input="errors.username = ''"
               />
             </div>
             <div v-if="errors.username" class="field-error">{{ errors.username }}</div>
@@ -44,6 +48,7 @@
                 type="email"
                 placeholder="your@email.com"
                 :disabled="loading"
+                @input="errors.email = ''"
               />
             </div>
             <div v-if="errors.email" class="field-error">{{ errors.email }}</div>
@@ -60,10 +65,14 @@
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="至少8位字符"
                 :disabled="loading"
+                @input="validatePassword"
               />
               <button type="button" class="password-toggle" @click="showPassword = !showPassword">
                 <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
+            </div>
+            <div v-if="form.password && !errors.password" class="password-strength" :class="passwordStrengthClass">
+              强度: {{ passwordStrengthText }}
             </div>
             <div v-if="errors.password" class="field-error">{{ errors.password }}</div>
           </div>
@@ -79,6 +88,7 @@
                 :type="showConfirmPassword ? 'text' : 'password'"
                 placeholder="再次输入密码"
                 :disabled="loading"
+                @input="validateConfirmPassword"
               />
               <button type="button" class="password-toggle" @click="showConfirmPassword = !showConfirmPassword">
                 <i :class="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
@@ -87,20 +97,26 @@
             <div v-if="errors.confirmPassword" class="field-error">{{ errors.confirmPassword }}</div>
           </div>
 
-          <!-- Error message -->
-          <div v-if="error" class="error-message">
+          <!-- Global Error message -->
+          <div v-if="globalError" class="error-message">
             <i class="fas fa-exclamation-circle"></i>
-            {{ error }}
+            {{ globalError }}
+          </div>
+
+          <!-- Success message -->
+          <div v-if="successMode" class="success-message">
+            <i class="fas fa-check-circle"></i>
+            账户已创建！<br>获得 1000 虚拟点欢迎奖励<br>2秒后自动跳转登录...
           </div>
 
           <!-- Register button -->
-          <button type="submit" class="register-btn" :disabled="loading || !isFormValid">
+          <button v-if="!successMode" type="submit" class="register-btn" :disabled="loading || !isFormValid">
             <span v-if="loading" class="loading-spinner"></span>
             <span v-else>立即注册</span>
           </button>
         </form>
 
-        <!-- Social register / login -->
+        <!-- Social register -->
         <div class="divider">
           <span>或使用第三方登录</span>
         </div>
@@ -121,7 +137,7 @@
         <!-- Login link -->
         <div class="login-section">
           <p>
-            已有账户?
+            已有账户? 
             <router-link to="/login" class="login-link">立即登录</router-link>
           </p>
         </div>
@@ -130,107 +146,188 @@
   </div>
 </template>
 
-<script>
-import { mapState, mapActions, mapGetters } from 'pinia'
+<script setup>
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { storeToRefs } from 'pinia'
+console.log('Register.vue loaded') // Debug log to confirm component load
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
+const { loading, error: authError, availableProviders, registerSuccess } = storeToRefs(authStore)
 
-export default {
-  name: 'RegisterView',
-  data() {
-    return {
-      form: {
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-      },
-      showPassword: false,
-      showConfirmPassword: false,
-      errors: {}
-    }
-  },
-  computed: {
-    ...mapState(useAuthStore, ['loading', 'error']),
-    ...mapGetters(useAuthStore, ['availableProviders']),
-    isFormValid() {
-      return this.form.username && 
-             this.form.email && 
-             this.form.password && 
-             this.form.confirmPassword === this.form.password &&
-             this.form.password.length >= 8
-    }
-  },
-  methods: {
-    ...mapActions(useAuthStore, [
-      'register',
-      'loginWithProvider',
-      'clearError'
-    ]),
+const form = reactive({
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+})
 
-    validateForm() {
-      this.errors = {}
-      let isValid = true
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+const errors = ref({})
+const globalError = ref('')
 
-      if (!this.form.username.trim()) {
-        this.errors.username = '用户名不能为空'
-        isValid = false
-      }
+const isFormValid = computed(() => {
+  return form.username.trim() && 
+         form.email && 
+         form.password.length >= 8 &&
+         form.confirmPassword === form.password &&
+         Object.keys(errors.value).length === 0
+})
 
-      if (!this.form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        this.errors.email = '请输入有效的邮箱地址'
-        isValid = false
-      }
+const passwordStrength = computed(() => {
+  const pwd = form.password
+  let score = 0
+  if (pwd.length >= 8) score++
+  if (/[a-z]/.test(pwd)) score++
+  if (/[A-Z]/.test(pwd)) score++
+  if (/\d/.test(pwd)) score++
+  if (/[^a-zA-Z\d]/.test(pwd)) score++
+  return score
+})
 
-      if (this.form.password.length < 8) {
-        this.errors.password = '密码至少8位字符'
-        isValid = false
-      }
+const passwordStrengthClass = computed(() => {
+  const score = passwordStrength.value
+  if (score <= 2) return 'weak'
+  if (score <= 3) return 'medium'
+  return 'strong'
+})
 
-      if (this.form.password !== this.form.confirmPassword) {
-        this.errors.confirmPassword = '两次密码输入不一致'
-        isValid = false
-      }
+const passwordStrengthText = computed(() => {
+  const score = passwordStrength.value
+  if (score <= 2) return '弱'
+  if (score <= 3) return '中等'
+  return '强'
+})
 
-      return isValid
-    },
+const validateForm = () => {
+  errors.value = {}
+  let valid = true
 
-    async handleRegister() {
-      if (!this.validateForm()) return
+  if (!form.username.trim()) {
+    errors.value.username = '用户名不能为空'
+    valid = false
+  } else if (form.username.length < 3) {
+    errors.value.username = '用户名至少3个字符'
+    valid = false
+  }
 
-      await this.register(this.form)
-      if (!this.error) {
-        this.$router.push('/login?registered=true')
-      }
-    },
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!form.email || !emailRegex.test(form.email)) {
+    errors.value.email = '请输入有效的邮箱地址'
+    valid = false
+  }
 
-    async handleForgotPassword() {
-      if (!this.forgotEmail) return
-      await this.forgotPassword(this.forgotEmail)
-    },
+  if (form.password.length < 8) {
+    errors.value.password = '密码至少8位字符'
+    valid = false
+  }
 
-    handleSocialLogin(providerId) {
-      this.loginWithProvider(providerId)
-    },
+  if (form.password && form.confirmPassword && form.password !== form.confirmPassword) {
+    errors.value.confirmPassword = '两次输入密码不一致'
+    valid = false
+  }
 
-    getProviderIcon(providerId) {
-      const icons = {
-        github: 'fab fa-github',
-        google: 'fab fa-google',
-        microsoft: 'fab fa-microsoft',
-        qq: 'fab fa-qq',
-        wechat: 'fab fa-weixin'
-      }
-      return icons[providerId] || 'fas fa-sign-in-alt'
-    }
-  },
-  mounted() {
-    this.clearError()
+  return valid
+}
+
+const validatePassword = () => {
+  if (form.password.length < 8) {
+    errors.value.password = '密码至少8位字符'
+  } else {
+    delete errors.value.password
   }
 }
+
+const validateConfirmPassword = () => {
+  if (form.confirmPassword && form.password !== form.confirmPassword) {
+    errors.value.confirmPassword = '两次输入密码不一致'
+  } else {
+    delete errors.value.confirmPassword
+  }
+}
+
+const handleRegister = async () => {
+  if (!validateForm()) return
+  
+  globalError.value = ''
+  authStore.clearError()
+  
+  try {
+    await authStore.register({
+      username: form.username,
+      email: form.email,
+      password: form.password
+    })
+    // Success handled in store redirect
+  } catch (err) {
+    globalError.value = authError.value || '注册失败，请重试'
+  }
+}
+
+const handleSocialLogin = (providerId) => {
+  authStore.loginWithProvider(providerId)
+}
+
+const getProviderIcon = (providerId) => {
+  const icons = {
+    github: 'fab fa-github',
+    google: 'fab fa-google',
+    microsoft: 'fab fa-microsoft',
+    qq: 'fab fa-qq',
+    wechat: 'fab fa-weixin'
+  }
+  return icons[providerId] || 'fas fa-sign-in-alt'
+}
+
+const successMode = computed(() => route.query.success === 'true')
+
+const successMessage = ref('')
+
+onMounted(async () => {
+  console.log('欢迎注册虚拟点交易平台! ✨')
+  authStore.clearError()
+  authStore.fetchProviders()
+  if (successMode.value) {
+    successMessage.value = '注册成功！您现在可以登录了...'
+    setTimeout(() => {
+      router.push('/login')
+    }, 2000)
+  }
+  await nextTick()
+  if (!successMode.value) {
+    const usernameInput = document.getElementById('username')
+    if (usernameInput) usernameInput.focus()
+  }
+})
 </script>
 
 <style scoped>
-/* Reuse Login.vue styles with adjustments */
+/* ... existing styles ... password strength colors */
+.password-strength {
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.password-strength.weak {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+}
+
+.password-strength.medium {
+  background: rgba(251, 191, 36, 0.2);
+  color: #f59e0b;
+}
+
+.password-strength.strong {
+  background: rgba(34, 197, 94, 0.2);
+  color: #10b981;
+}
+
 .register-page {
   min-height: 100vh;
   display: flex;
@@ -260,7 +357,6 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
-  position: relative;
 }
 
 .brand-title {
@@ -318,6 +414,20 @@ export default {
   color: #d4d4d4;
 }
 
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8e8e8e;
+  font-size: 16px;
+  pointer-events: none;
+}
+
 .input-wrapper input {
   width: 100%;
   padding: 14px 16px 14px 44px;
@@ -334,11 +444,29 @@ export default {
   border-color: #4dabf7;
   box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.1);
   background: #404040;
+  outline: none;
 }
 
 .input-wrapper input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #8e8e8e;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 16px;
+}
+
+.password-toggle:hover {
+  color: #e0e0e0;
 }
 
 .field-error {
@@ -357,6 +485,34 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.success-title {
+  color: #10b981 !important;
+}
+
+.success-subtitle {
+  color: #6ee7b7 !important;
+  font-weight: 500;
+}
+
+.success-message {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  color: #10b981;
+  font-size: 16px;
+  text-align: center;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.success-message i {
+  font-size: 24px;
 }
 
 .register-btn {
@@ -440,6 +596,7 @@ export default {
   justify-content: center;
   gap: 12px;
   transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .social-btn:hover:not(:disabled) {
@@ -494,4 +651,3 @@ export default {
   }
 }
 </style>
-
