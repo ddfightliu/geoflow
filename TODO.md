@@ -1,29 +1,12 @@
-# Geoflow Project TODO Tracking
+# TODO: Fix errors in init_trading_db.py
 
-## Current Status
-✅ **Welcome/Login Modal Implementation** - Completed  
-✅ **User Authentication Backend** - Implemented (MongoDB + OAuth)  
-✅ **Frontend Auth Store + Router** - Implemented  
+- [x] Create TODO.md with plan steps
+- [x] Step 1: Add necessary imports (time, ObjectId)
+- [x] Step 2: Fix sample_users insertion and extract real user_ids after insert
+- [x] Step 3: Replace deprecated asyncio.get_event_loop().time() with time.time()
+- [x] Step 4: Update sample_trades to use actual inserted user_ids
+- [x] Step 5: Remove redundant user indexes (covered by init_db)
+- [x] Step 6: Clean up client handling
+- [x] Step 7: Test execution with `python3 init_trading_db.py`
+- [x] Step 8: Mark complete and attempt_completion
 
-## Fix Progress (Error Checking)
-- [ ] 1. Remove hardcoded DB password (config.py)  
-- [ ] 2. Fix App.vue duplicate import  
-- [ ] 3. Fix Pydantic schema id:int → str  
-- [ ] 4. Fix database.py type signature  
-- [ ] 5. NPM audit fix (frontend)  
-- [ ] 6. Test backend/frontend servers  
-- [ ] 7. MongoDB connection test  
-
-## Testing Steps
-```
-# Backend test
-uvicorn backend.main:app --reload --port 8000
-
-# Frontend dev  
-cd frontend && npm run dev
-
-# Full stack
-python run_geoflow_web.py
-```
-
-**Next:** Complete error fixes above.

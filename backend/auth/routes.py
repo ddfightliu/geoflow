@@ -116,7 +116,6 @@ async def register(user: UserCreate):
     existing = await get_user_by_username(user.username) or await get_user_by_email(user.email)
     if existing:
         raise HTTPException(status_code=400, detail="用户名或邮箱已存在")
-    
     # Hash password
     hashed_password = pwd_context.hash(user.password)
     

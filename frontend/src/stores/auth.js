@@ -6,7 +6,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
+const API_BASE = '' // Use vite proxy /api -> localhost:8000
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -94,11 +94,13 @@ async register({ username, email, password }) {
           password
         })
         // Success - show success on register page
+        console.log('Register API success:', response.data)
         this.registerSuccess = true
-        this.$router.push('/register?success=true')
+        this.$router.push('/login?registered=true')
       } catch (error) {
-        console.error('Register failed:', error)
-        this.error = error.response?.data?.detail || '注册失败，请重试。'
+      console.error('Register failed:', error)
+      this.error = error.response?.data?.detail || '注册失败，请重试。'
+      console.log('Register network response:', error.response?.status, error.response?.data)
       } finally {
         this.loading = false
       }

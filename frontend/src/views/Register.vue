@@ -6,7 +6,7 @@
         <div class="branding-content">
           <h1 class="brand-title">虚拟点交易平台</h1>
           <p class="brand-subtitle">加入游戏世界，开启虚拟点交易之旅</p>
-          
+
         </div>
       </div>
 
@@ -25,14 +25,8 @@
             <label for="username">用户名</label>
             <div class="input-wrapper">
               <i class="fas fa-user input-icon"></i>
-              <input
-                id="username"
-                v-model="form.username"
-                type="text"
-                placeholder="选择一个独特的用户名"
-                :disabled="loading"
-                @input="errors.username = ''"
-              />
+              <input id="username" v-model="form.username" type="text" placeholder="选择一个独特的用户名" :disabled="loading"
+                @input="validateForm" />
             </div>
             <div v-if="errors.username" class="field-error">{{ errors.username }}</div>
           </div>
@@ -42,14 +36,8 @@
             <label for="email">邮箱</label>
             <div class="input-wrapper">
               <i class="fas fa-envelope input-icon"></i>
-              <input
-                id="email"
-                v-model="form.email"
-                type="email"
-                placeholder="your@email.com"
-                :disabled="loading"
-                @input="errors.email = ''"
-              />
+              <input id="email" v-model="form.email" type="email" placeholder="your@email.com" :disabled="loading"
+                @input="validateForm" />
             </div>
             <div v-if="errors.email" class="field-error">{{ errors.email }}</div>
           </div>
@@ -59,14 +47,8 @@
             <label for="password">密码</label>
             <div class="input-wrapper">
               <i class="fas fa-lock input-icon"></i>
-              <input
-                id="password"
-                v-model="form.password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="至少8位字符"
-                :disabled="loading"
-                @input="validatePassword"
-              />
+              <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
+                placeholder="至少8位字符" :disabled="loading" @input="validateForm" />
               <button type="button" class="password-toggle" @click="showPassword = !showPassword">
                 <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
@@ -82,14 +64,9 @@
             <label for="confirmPassword">确认密码</label>
             <div class="input-wrapper">
               <i class="fas fa-lock input-icon"></i>
-              <input
-                id="confirmPassword"
-                v-model="form.confirmPassword"
-                :type="showConfirmPassword ? 'text' : 'password'"
-                placeholder="再次输入密码"
-                :disabled="loading"
-                @input="validateConfirmPassword"
-              />
+              <input id="confirmPassword" v-model="form.confirmPassword"
+                :type="showConfirmPassword ? 'text' : 'password'" placeholder="再次输入密码" :disabled="loading"
+                @input="validateForm" />
               <button type="button" class="password-toggle" @click="showConfirmPassword = !showConfirmPassword">
                 <i :class="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
@@ -122,13 +99,8 @@
         </div>
 
         <div class="social-login">
-          <button
-            v-for="provider in availableProviders"
-            :key="provider.id"
-            class="social-btn"
-            :disabled="!provider.enabled || loading"
-            @click="handleSocialLogin(provider.id)"
-          >
+          <button v-for="provider in availableProviders" :key="provider.id" class="social-btn"
+            :disabled="!provider.enabled || loading" @click="handleSocialLogin(provider.id)">
             <i :class="getProviderIcon(provider.id)"></i>
             <span>使用 {{ provider.name }} 注册</span>
           </button>
@@ -137,7 +109,7 @@
         <!-- Login link -->
         <div class="login-section">
           <p>
-            已有账户? 
+            已有账户?
             <router-link to="/login" class="login-link">立即登录</router-link>
           </p>
         </div>
@@ -151,7 +123,6 @@ import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { storeToRefs } from 'pinia'
-console.log('Register.vue loaded') // Debug log to confirm component load
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
@@ -170,11 +141,13 @@ const errors = ref({})
 const globalError = ref('')
 
 const isFormValid = computed(() => {
-  return form.username.trim() && 
-         form.email && 
-         form.password.length >= 8 &&
-         form.confirmPassword === form.password &&
-         Object.keys(errors.value).length === 0
+  const isFormValid = form.username.trim() &&
+    form.email &&
+    form.password.length >= 8 &&
+    form.confirmPassword === form.password &&
+    Object.keys(errors.value).length === 0
+
+  return isFormValid
 })
 
 const passwordStrength = computed(() => {
@@ -233,28 +206,14 @@ const validateForm = () => {
   return valid
 }
 
-const validatePassword = () => {
-  if (form.password.length < 8) {
-    errors.value.password = '密码至少8位字符'
-  } else {
-    delete errors.value.password
-  }
-}
 
-const validateConfirmPassword = () => {
-  if (form.confirmPassword && form.password !== form.confirmPassword) {
-    errors.value.confirmPassword = '两次输入密码不一致'
-  } else {
-    delete errors.value.confirmPassword
-  }
-}
 
 const handleRegister = async () => {
   if (!validateForm()) return
-  
+
   globalError.value = ''
   authStore.clearError()
-  
+
   try {
     await authStore.register({
       username: form.username,
@@ -547,7 +506,7 @@ onMounted(async () => {
 .loading-spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -633,7 +592,9 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
@@ -641,11 +602,12 @@ onMounted(async () => {
     flex-direction: column;
     margin: 10px;
   }
-  
-  .register-branding, .register-form-section {
+
+  .register-branding,
+  .register-form-section {
     padding: 40px 30px;
   }
-  
+
   .brand-title {
     font-size: 28px;
   }

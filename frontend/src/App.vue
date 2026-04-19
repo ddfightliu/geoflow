@@ -127,7 +127,8 @@
     <WelcomeModal 
       v-if="showWelcome" 
       @close="showWelcome = false" 
-      @login="showLoginModal = true" 
+      @login="showLoginModal = true"
+      @register="showWelcome = false; router.push('/register')" 
     />
 
     <!-- Login Modal -->
@@ -138,9 +139,10 @@
       :providers="availableProviders"
       @close="showLoginModal = false"
       @login="handleModalLogin"
-      @'social-login'="handleSocialLogin"
+      @"social-login"="handleSocialLogin"
     />
   </div>
+
 </template>
 
 <script setup>

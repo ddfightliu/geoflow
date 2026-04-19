@@ -42,9 +42,9 @@
       </div>
 
       <div class="welcome-footer">
-        <router-link to="/register" class="register-link">
+        <span class="register-link" @click.stop="handleRegister">
           没有账户？立即注册
-        </router-link>
+        </span>
       </div>
     </div>
   </div>
@@ -61,6 +61,10 @@ const handleLogin = () => {
 
 const handleLater = () => {
   emit('close')
+}
+
+const handleRegister = () => {
+  emit('register')
 }
 </script>
 
