@@ -95,8 +95,8 @@
           </div>
         </template>
         
-        <!-- Not authenticated: Show Login -->
-        <LoginComponent v-else />
+        <!-- Not authenticated: Router view for login/register -->
+        <router-view />
       </div>
     </div>
 
@@ -122,20 +122,45 @@
         </span>
       </div>
     </div>
+
+    <!-- Welcome Modal -->
+    <WelcomeModal 
+      v-if="showWelcome" 
+      @close="showWelcome = false" 
+      @login="showLoginModal = true" 
+    />
+
+    <!-- Login Modal -->
+    <LoginModal 
+      v-if="showLoginModal" 
+      :loading="loginLoading"
+      :error="loginError"
+      :providers="availableProviders"
+      @close="showLoginModal = false"
+      @login="handleModalLogin"
+      @'social-login'="handleSocialLogin"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick, watch } from 'vue'
+import WelcomeModal from './components/WelcomeModal.vue'
+import LoginModal from './components/LoginModal.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import { storeToRefs } from 'pinia'
-import LoginComponent from './views/Login.vue'
+
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const { isAuthenticated, token } = storeToRefs(authStore)
+const { isAuthenticated, token, loading: authLoading, availableProviders } = storeToRefs(authStore)
+
+const showWelcome = ref(false)
+const showLoginModal = ref(false)
+const loginLoading = ref(false)
+const loginError = ref('')
 
 const currentActivity = ref('explorer')
 const showEditorTabs = ref(false)
@@ -184,10 +209,51 @@ const closeWindow = () => {
   }
 }
 
-onMounted(() => {
+const handleModalLogin = async ({ username, password, remember_me }) => {
+  loginLoading.value = true
+  loginError.value = ''
+  try {
+    const result = await authStore.loginWithCredentials({
+      username,
+      password,
+      remember_me
+    })
+    if (result.success) {
+      showLoginModal.value = false
+      showWelcome.value = false
+      await nextTick()
+    }
+  } catch (err) {
+    loginError.value = authStore.error || '登录失败'
+  } finally {
+    loginLoading.value = false
+  }
+}
+
+const handleSocialLogin = (providerId) => {
+  authStore.loginWithProvider(providerId)
+  showLoginModal.value = false
+  showWelcome.value = false
+}
+
+watch(isAuthenticated, (newVal) => {
+  if (newVal) {
+    showWelcome.value = false
+    showLoginModal.value = false
+  }
+})
+
+onMounted(async () => {
   console.log('GeoFlow App loaded! 🚀')
+  await authStore.fetchProviders()
+  
+  // Check auth status
   if (token.value) {
-    authStore.fetchCurrentUser()
+    await authStore.fetchCurrentUser()
+  } else {
+    // Show welcome for unauthenticated
+    await nextTick()
+    showWelcome.value = true
   }
 })
 </script>

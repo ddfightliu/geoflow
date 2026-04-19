@@ -96,7 +96,7 @@ async def create_transaction(tx_data: dict):
     return tx_data
 
 
-async def get_user_transactions(user_id: int, limit: int = 50):
+async def get_user_transactions(user_id: str, limit: int = 50):
     cursor = transactions_collection.find({"user_id": user_id}).sort("created_at", -1).limit(limit)
     transactions = await cursor.to_list(length=limit)
     for tx in transactions:

@@ -10,34 +10,10 @@ import Home from '../views/Home.vue'
 
 const routes = [
   {
-    path: '/login',
-    name: 'Login',
-    component: Login,
-    meta: { requiresAuth: false }
-  },
-  {
-    path: '/register',
-    name: 'Register',
-    component: Register,
-    meta: { requiresAuth: false }
-  },
-  {
-    path: '/register/success',
-    name: 'RegisterSuccess',
-    component: Register,
-    meta: { requiresAuth: false }
-  },
-  {
-    path: '/login/success',
-    name: 'LoginSuccess',
-    component: Login,
-    meta: { requiresAuth: false }
-  },
-  {
     path: '/',
     name: 'Home',
     component: Home,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: false }
   }
 ]
 

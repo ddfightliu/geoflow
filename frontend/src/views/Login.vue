@@ -1,14 +1,5 @@
 <template>
-  <div class="login-page">
     <div class="login-box">
-      <!-- Left side - Branding -->
-      <div class="login-branding">
-        <div class="branding-content">
-          <h1 class="brand-title">Geoflow</h1>
-          <p class="brand-subtitle">探索地球科学的无限可能</p>
-        </div>
-      </div>
-
       <!-- Right side - Login Form -->
       <div class="login-form-section">
         <div class="form-header">
@@ -127,7 +118,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -214,15 +204,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-  padding: 20px;
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-}
 
 .login-box {
   display: flex;

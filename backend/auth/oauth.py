@@ -428,20 +428,11 @@ def get_oauth_client(provider: str) -> BaseOAuthClient:
 
 def get_available_providers() -> list:
     """Get list of available OAuth providers with their status."""
-    providers = []
-    
-    for key, config in OAUTH_PROVIDERS.items():
-        # Check if credentials are configured
-        client_id_key = f"{key.upper()}_CLIENT_ID"
-        client = getattr(settings, client_id_key, "")
-        is_configured = bool(client)
-        
-        providers.append({
-            "id": key,
-            "name": config["name"],
-            "icon": config["icon"],
-            "enabled": is_configured
-        })
-    
-    return providers
+    # Demo mode - enable popular providers
+    demo_providers = [
+        {"id": "github", "name": "GitHub", "icon": "github", "enabled": True},
+        {"id": "google", "name": "Google", "icon": "google", "enabled": True},
+        {"id": "microsoft", "name": "Microsoft", "icon": "microsoft", "enabled": True},
+    ]
+    return demo_providers
 

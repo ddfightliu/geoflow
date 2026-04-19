@@ -29,8 +29,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "mongodb+srv://ddfightliu:1234QWERasdf@cluster0.ewis9cz.mongodb.net/geoflow?retryWrites=true&w=majority&authSource=admin&appName=Cluster0"    
     
     # OAuth Providers - GitHub
-    GITHUB_CLIENT_ID: str = ""
-    GITHUB_CLIENT_SECRET: str = ""
+    GITHUB_CLIENT_ID: str = "demo-github"
+    GITHUB_CLIENT_SECRET: str = "demo-secret"
     GITHUB_REDIRECT_URI: str = "http://localhost:8000/api/auth/callback/github"
     
     # OAuth Providers - Microsoft

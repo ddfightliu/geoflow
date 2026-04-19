@@ -5,12 +5,15 @@
       <p>欢迎回来！您的虚拟点交易中心</p>
     </header>
 
+    <!-- Hide login prompt - handled by App.vue modals now -->
+    <!--
     <div v-if="!user" class="login-prompt">
       <h2>请先登录以查看您的虚拟点余额和交易记录</h2>
       <router-link to="/login" class="login-cta">立即登录</router-link>
     </div>
+    -->
 
-    <div v-else class="dashboard-content">
+    <div v-if="user" class="dashboard-content">
       <!-- Points Balance Card -->
       <div class="points-card">
         <div class="card-header">

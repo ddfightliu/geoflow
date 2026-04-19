@@ -100,12 +100,7 @@ async def main():
         print("Backend startup timeout")
         backend_proc.terminate()
         sys.exit(1)
-    
-    # Start frontend (standard bun dev)
-    print("Starting frontend dev server (http://localhost:5173)")
-    frontend_proc = subprocess.Popen(['bun', 'dev'], cwd=str(FRONTEND_DIR)) if shutil.which('bun') else subprocess.Popen(['npm', 'run', 'dev'], cwd=str(FRONTEND_DIR))
-    processes.append(frontend_proc)
-    
+
     # Wait for backend ready
     if not check_backend_ready():
         backend_proc.terminate()

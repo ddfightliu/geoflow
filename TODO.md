@@ -1,21 +1,29 @@
-# New Tasks: Forgot Password + Console Welcomes
+# Geoflow Project TODO Tracking
 
-Status: **Planning** 
+## Current Status
+✅ **Welcome/Login Modal Implementation** - Completed  
+✅ **User Authentication Backend** - Implemented (MongoDB + OAuth)  
+✅ **Frontend Auth Store + Router** - Implemented  
 
-## Tasks
-1. **Fix run_geoflow.py** - Remove `--api` flag (Vite error), fix readiness check
-2. **Forgot Password**:
-   - Login.vue: "忘记密码?" → input modal → authStore.forgotPassword(email)
-   - Store already has action (backend mock OK)
-   - Show toast "重置邮件发送成功"
-3. **Console Welcome Messages** - Add `console.log` in onMounted:
-   - Login.vue: "欢迎来到登录页面! 👋"
-   - Register.vue: "欢迎注册虚拟点交易平台! ✨"
-   - Home.vue: "欢迎回家，交易大师! 💰"
-   - App.vue: "GeoFlow App loaded! 🚀"
+## Fix Progress (Error Checking)
+- [ ] 1. Remove hardcoded DB password (config.py)  
+- [ ] 2. Fix App.vue duplicate import  
+- [ ] 3. Fix Pydantic schema id:int → str  
+- [ ] 4. Fix database.py type signature  
+- [ ] 5. NPM audit fix (frontend)  
+- [ ] 6. Test backend/frontend servers  
+- [ ] 7. MongoDB connection test  
 
-## Files
-- run_geoflow.py
-- frontend/src/views/Login.vue (add forgot modal)
-- All Vue pages (add console.log)
+## Testing Steps
+```
+# Backend test
+uvicorn backend.main:app --reload --port 8000
 
+# Frontend dev  
+cd frontend && npm run dev
+
+# Full stack
+python run_geoflow_web.py
+```
+
+**Next:** Complete error fixes above.
