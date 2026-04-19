@@ -19,5 +19,3 @@ Status: **Planning**
 - frontend/src/views/Login.vue (add forgot modal)
 - All Vue pages (add console.log)
 
-Approve plan?
-

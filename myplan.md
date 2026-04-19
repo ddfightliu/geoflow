@@ -1,4 +1,5 @@
-
+- 前端网站样式使用tailwindcss
+- 目前路由或是登录页面不对，登录页面要有用户名密码输入框，登录、注册、其他平台登录等按钮
 - 登录页面要有其他平台登录的按钮
 - 登录页面完善用户注册功能、忘记密码找回功能
 - 本项目数据存储在数据库中,数据库使用 : uri = "mongodb+srv://ddfightliu:Gyz20182018*@cluster0.ewis9cz.mongodb.net/?appName=Cluster0"
