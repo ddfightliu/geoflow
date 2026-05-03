@@ -10,24 +10,36 @@ from backend.auth.config import get_settings
 settings = get_settings()
 
 # MongoDB client
-client = motor.motor_asyncio.AsyncIOMotorClient(settings.DATABASE_URL)
+client = motor.motor_asyncio.AsyncIOMotorClient(
+    settings.DATABASE_URL,
+    serverSelectionTimeoutMS=5000,
+    connectTimeoutMS=5000,
+)
 db = client.geoflow  # Explicit database name
 
 users_collection = db.users
 transactions_collection = db.transactions
 
+db_available = False
+
 
 async def init_db():
     """Initialize database indexes."""
-    # Users collection indexes
-    await users_collection.create_index("username", unique=True)
-    await users_collection.create_index("email", unique=True)
-    await users_collection.create_index("provider_id", unique=True, sparse=True)
-    
-    # Transactions collection indexes
-    await transactions_collection.create_index("user_id")
-    await transactions_collection.create_index("created_at")
-    print("MongoDB indexes created successfully")
+    global db_available
+    try:
+        # Users collection indexes
+        await users_collection.create_index("username", unique=True)
+        await users_collection.create_index("email", unique=True)
+        await users_collection.create_index("provider_id", unique=True, sparse=True)
+        
+        # Transactions collection indexes
+        await transactions_collection.create_index("user_id")
+        await transactions_collection.create_index("created_at")
+        db_available = True
+        print("MongoDB indexes created successfully")
+    except Exception as e:
+        db_available = False
+        print(f"Warning: MongoDB init_db failed, continuing without DB access: {e}")
 
 
 async def get_user_by_username(username: str):

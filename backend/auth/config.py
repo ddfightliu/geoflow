@@ -26,7 +26,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30 * 24 * 60  # 30 days
     
     # Database
-    DATABASE_URL: str = "mongodb+srv://ddfightliu:1234QWERasdf@cluster0.ewis9cz.mongodb.net/geoflow?retryWrites=true&w=majority&authSource=admin&appName=Cluster0"    
+    # Default to a local development MongoDB instance for easier startup.
+    # Override with DATABASE_URL in .env for production or remote clusters.
+    DATABASE_URL: str = "mongodb://localhost:27017/geoflow"
     
     # OAuth Providers - GitHub
     GITHUB_CLIENT_ID: str = "demo-github"
