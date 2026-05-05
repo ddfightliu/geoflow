@@ -4,16 +4,23 @@ Compatible with FastAPI async endpoints.
 """
 
 import motor.motor_asyncio
+import asyncio
 from backend.auth.config import get_settings
 
 
 settings = get_settings()
 
-# MongoDB client
+# MongoDB client - Atlas optimized
 client = motor.motor_asyncio.AsyncIOMotorClient(
     settings.DATABASE_URL,
-    serverSelectionTimeoutMS=5000,
-    connectTimeoutMS=5000,
+    serverSelectionTimeoutMS=10000,
+    connectTimeoutMS=10000,
+    socketTimeoutMS=20000,
+    retryWrites=True,
+    authMechanism="DEFAULT",
+    authSource="admin",
+    w="majority",
+    maxPoolSize=50,
 )
 db = client.geoflow  # Explicit database name
 
@@ -24,22 +31,39 @@ db_available = False
 
 
 async def init_db():
-    """Initialize database indexes."""
+    """Test connection with retry, then initialize indexes."""
     global db_available
-    try:
-        # Users collection indexes
-        await users_collection.create_index("username", unique=True)
-        await users_collection.create_index("email", unique=True)
-        await users_collection.create_index("provider_id", unique=True, sparse=True)
-        
-        # Transactions collection indexes
-        await transactions_collection.create_index("user_id")
-        await transactions_collection.create_index("created_at")
-        db_available = True
-        print("MongoDB indexes created successfully")
-    except Exception as e:
+    max_retries = 3
+    ping_success = False
+    for attempt in range(1, max_retries + 1):
+        try:
+            print(f"MongoDB init attempt {attempt}/{max_retries}...")
+            await client.admin.command("ping")
+            print("MongoDB ping successful - Connected to Atlas!")
+            ping_success = True
+            break
+        except Exception as ping_error:
+            print(f"Ping failed (attempt {attempt}): {ping_error}")
+            if attempt == max_retries:
+                raise
+            await asyncio.sleep(2 ** attempt)
+    if ping_success:
+        try:
+            # Indexes only after ping success
+            await users_collection.create_index("username", unique=True)
+            await users_collection.create_index("email", unique=True)
+            await users_collection.create_index("provider_id", unique=True, sparse=True)
+            await transactions_collection.create_index("user_id")
+            await transactions_collection.create_index("created_at")
+            db_available = True
+            print("MongoDB indexes created successfully")
+        except Exception as index_error:
+            print(f"Index creation failed: {index_error}")
+            db_available = False
+    else:
         db_available = False
-        print(f"Warning: MongoDB init_db failed, continuing without DB access: {e}")
+        print("ERROR: MongoDB ping failed after retries. Check .env DATABASE_URL and Atlas whitelist.")
+        print("App continues with limited DB functionality.")
 
 
 async def get_user_by_username(username: str):

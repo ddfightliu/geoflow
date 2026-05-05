@@ -19,6 +19,7 @@ from pathlib import Path
 import os
 
 from backend.auth.routes import router as auth_router
+from backend.auth.database import db_available
 
 app = FastAPI(title="Geoflow Web API", version="0.1.0")
 

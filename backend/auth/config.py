@@ -25,10 +25,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30 * 24 * 60  # 30 days
     
-    # Database
-    # Default to a local development MongoDB instance for easier startup.
-    # Override with DATABASE_URL in .env for production or remote clusters.
-    DATABASE_URL: str = "mongodb://localhost:27017/geoflow"
+    # Database - Loads from .env first, falls back to local dev
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "mongodb://localhost:27017/geoflow")
     
     # OAuth Providers - GitHub
     GITHUB_CLIENT_ID: str = "demo-github"

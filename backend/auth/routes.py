@@ -12,7 +12,7 @@ import uuid
 import secrets
 
 from backend.auth.database import (
-    init_db, get_user_by_username, create_user, get_user_by_email,
+    db_available, init_db, get_user_by_username, create_user, get_user_by_email,
     get_user_by_id, update_user, get_points_balance, update_points,
     create_transaction, get_user_transactions
 )
@@ -24,6 +24,7 @@ from backend.auth.token import create_access_token, decode_access_token
 from backend.auth.oauth import get_oauth_client, get_available_providers, OAuthError
 from backend.auth.config import get_settings
 from backend.auth.models import pwd_context
+from backend.auth.database import db_available
 
 settings = get_settings()
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
@@ -264,6 +265,16 @@ async def get_history(limit: int = Query(50), token: str = Depends(oauth2_scheme
     user_id = payload.get("sub")
     transactions = await get_user_transactions(user_id, limit)
     return transactions
+
+
+@router.get("/db/health")
+async def db_health():
+    """DB connection health check."""
+    return {
+        "db_available": db_available,
+        "database_url": settings.DATABASE_URL.replace(settings.JWT_SECRET_KEY[:4] + '...', '***HIDDEN***') if 'mongodb' in settings.DATABASE_URL else 'N/A',
+        "status": "healthy" if db_available else "limited"
+    }
 
 
 @router.get("/points/market", response_model=MarketPrice)
